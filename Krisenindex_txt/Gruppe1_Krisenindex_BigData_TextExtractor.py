@@ -19,6 +19,15 @@ tag = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "
 schaltjahre = [2000, 2004, 2008, 2012, 2016, 2020]
 tags = ["NN", "NE", "NNE", "ADJA", "ADJD", "VVINF", "VVIMP"]
 
+def output(text, x, ordner_path):
+    if x < 9:
+        filename = ordner_path + "/Artikeltext0%d.txt" % (x+1)
+    else:
+        filename = ordner_path + "/Artikeltext%d.txt" % (x+1)            
+    writeFile = open(filename, 'w')
+    writeFile.write(text)
+    writeFile.close()
+    
 def gathering(monat, jahr, anzahl):
     ordner_path = dir_path + "/" + jahr + "_" + monat
     if not os.path.exists(ordner_path):
@@ -51,7 +60,7 @@ def gathering(monat, jahr, anzahl):
         for a in soup.select("article>header>h2>a"):
             links_artikel.append(a['href'])
            
-    for artikel, x in zip(links_artikel, range(len(links_artikel))):
+    for artikel in links_artikel:
     
         soup_link = BeautifulSoup(requests.get(artikel).content, 'html.parser')
         text = ""
@@ -62,18 +71,13 @@ def gathering(monat, jahr, anzahl):
         s = ""
         for token in doc:
             if token.tag_ in tags:    
-                s = s + " " + token.lemma_                                                    
-        Artikeltexte.append(s)
-        if x < 9:
-            filename = ordner_path + "/Artikeltext0%d.txt" % (x+1)
-        else:
-            filename = ordner_path + "/Artikeltext%d.txt" % (x+1)            
-        writeFile = open(filename, 'w')
-        writeFile.write(s)
-        writeFile.close()
-        counter += 1
-        if counter == anzahl:
-            break        
+                s = s + " " + token.lemma_  
+        if len(s) !=0:                                                  
+            Artikeltexte.append(s)
+            output(s, counter, ordner_path)
+            counter += 1
+            if counter == anzahl:
+                break         
         
     return Artikeltexte
     
