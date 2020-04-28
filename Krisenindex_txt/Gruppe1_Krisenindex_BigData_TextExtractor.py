@@ -20,7 +20,7 @@ nlp_e = spacy.load("en_core_web_sm")
 stamm = "https://www.spiegel.de/nachrichtenarchiv/artikel-"
 tag = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31"]
 schaltjahre = [2000, 2004, 2008, 2012, 2016, 2020]
-tags = ["NN", "NE", "NNE", "ADJA", "ADJD", "VVINF", "VVIMP"]
+tags_d = ["NN", "NE", "NNE", "ADJA", "ADJD", "VVINF", "VVIMP"]
 tags_e = ["NN", "NNP", "NNPS", "NNS","JJ", "JJR", "JJS", "VB", "VBD", "VBG", "VBN", "VBP", "VBZ"]
 
 def output(text, x, ordner_path):
@@ -74,7 +74,9 @@ def gathering(monat, jahr, anzahl):
         doc = nlp(text)
         if doc._.language["language"] == "en":
             doc = nlp_e(text)
-            tags = tags_e        
+            tags = tags_e.copy()
+        else:
+            tags = tags_d.copy()            
         s = ""
         for token in doc:
             if token.tag_ in tags:    
