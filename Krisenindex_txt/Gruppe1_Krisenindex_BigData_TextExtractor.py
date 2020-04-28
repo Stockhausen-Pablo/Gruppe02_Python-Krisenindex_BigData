@@ -8,16 +8,20 @@ Created on Sun Apr 26 12:34:00 2020
 # %%
 #Gathering Data
 import spacy
+from spacy_langdetect import LanguageDetector
 from bs4 import BeautifulSoup
 import requests
 import os 
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
-nlp = spacy.load("de_core_news_md")  
+nlp = spacy.load("de_core_news_md")
+nlp.add_pipe(LanguageDetector(), name='language_detector', last=True)
+nlp_e = spacy.load("en_core_web_sm")
 stamm = "https://www.spiegel.de/nachrichtenarchiv/artikel-"
 tag = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31"]
 schaltjahre = [2000, 2004, 2008, 2012, 2016, 2020]
 tags = ["NN", "NE", "NNE", "ADJA", "ADJD", "VVINF", "VVIMP"]
+tags_e = ["NN", "NNP", "NNPS", "NNS","JJ", "JJR", "JJS", "VB", "VBD", "VBG", "VBN", "VBP", "VBZ"]
 
 def output(text, x, ordner_path):
     if x < 9:
@@ -68,6 +72,9 @@ def gathering(monat, jahr, anzahl):
             text = text + i.text
      
         doc = nlp(text)
+        if doc._.language["language"] == "en":
+            doc = nlp_e(text)
+            tags = tags_e        
         s = ""
         for token in doc:
             if token.tag_ in tags:    
