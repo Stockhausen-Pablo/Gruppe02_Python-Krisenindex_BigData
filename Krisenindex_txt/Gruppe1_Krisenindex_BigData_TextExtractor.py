@@ -2,7 +2,7 @@
 """
 Created on Sun Apr 26 12:34:00 2020
 
-@author: Gruppe
+@author: Gruppe 2
 """
 
 # %%
@@ -28,7 +28,7 @@ def output(text, x, ordner_path):
         filename = ordner_path + "/Artikeltext0%d.txt" % (x+1)
     else:
         filename = ordner_path + "/Artikeltext%d.txt" % (x+1)            
-    writeFile = open(filename, 'w')
+    writeFile = open(filename, 'w', encoding="utf-8")
     writeFile.write(text)
     writeFile.close()
     
