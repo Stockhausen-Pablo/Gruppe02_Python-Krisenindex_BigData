@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 """
 Created on Mon Jun  1 10:06:02 2020
-
 @author: Paulo
 """
 
@@ -21,13 +20,14 @@ path_ky = dir_path + '/Weltwirtschaftskrise/2008_09'
 all_text_liste_k = []
 listOfFile_kx = os.listdir(path_kx)
 listOfFile_ky = os.listdir(path_ky)
+
 for file in listOfFile_kx:
     fullpath = path_kx + '/' + file
-    with open(fullpath, 'r') as file:
+    with open(fullpath, 'r', encoding="utf8") as file:
         all_text_liste_k.append(file.read())
 for file in listOfFile_ky:
     fullpath = path_ky + '/' + file
-    with open(fullpath, 'r') as file:
+    with open(fullpath, 'r', encoding="utf8") as file:
         all_text_liste_k.append(file.read()) 
 
 all_text_string_k = " ".join(all_text_liste_k).replace('.', "")
@@ -40,13 +40,14 @@ path_ny = dir_path + '/Weltwirtschaftskrise_Normalzeit_text/2008_06'
 all_text_liste_n = []
 listOfFile_nx = os.listdir(path_nx)
 listOfFile_ny = os.listdir(path_ny)
+
 for file in listOfFile_nx:
     fullpath = path_nx + '/' + file
-    with open(fullpath, 'r') as file:
+    with open(fullpath, 'r', encoding="utf8") as file:
         all_text_liste_n.append(file.read())
 for file in listOfFile_ny:
     fullpath = path_ny + '/' + file
-    with open(fullpath, 'r') as file:
+    with open(fullpath, 'r', encoding="utf8") as file:
         all_text_liste_n.append(file.read()) 
 
 all_text_string_n = " ".join(all_text_liste_n).replace('.', "")
