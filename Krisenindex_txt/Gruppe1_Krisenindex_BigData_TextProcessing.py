@@ -66,3 +66,43 @@ for tupel in Tupel_Bag:
             
     else:           
         Bin_Bag.append(tupel[0])
+  del listOfFile_kx,listOfFile_ky,listOfFile_nx,listOfFile_ny,path_kx,path_ky,path_nx,path_ny, Tupel_Bag_k, Tupel_Bag_n,tupel 
+
+# %%
+#python -m nltk.downloader all
+#<Word>|<POS tag> \t <Polarity weight> \t <Infl_1>,...,<Infl_k> \n
+#https://wortschatz.uni-leipzig.de/de/download
+
+# Path to both files
+#path_Senti_negative = dir_path + '/Senti/SentiWS_v2.0_Negative.txt'
+path_Senti_positive = dir_path + '/Senti/SentiWS_v2.0_Positive.txt'
+
+Senti_positive = []
+#Senti_negative = []
+
+with open(path_Senti_positive, 'r', encoding="utf8") as file:
+    Senti_positive = file.read().splitlines()
+
+# with open(path_Senti_negative, 'r', encoding="utf8") as file:
+#     Senti_negative = file.read().splitlines()
+    
+del path_Senti_positive
+
+# Filter List after specific word
+
+for index,element in enumerate(Senti_positive):
+    m = element.index('|')    
+    Senti_positive[index] = element[:m]
+
+# for index,element in enumerate(Senti_negative):
+#     m = element.index('|')    
+#     Senti_negative[index] = element[:m]
+
+# %%
+del dir_path, m, index
+
+#print(len(Word_Bag))
+
+Word_Bag = list(filter(lambda x: x not in Senti_positive, Word_Bag))
+           
+#print(len(Word_Bag))
