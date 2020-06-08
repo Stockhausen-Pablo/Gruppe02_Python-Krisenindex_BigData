@@ -5,8 +5,6 @@ Created on Sun Apr 26 12:34:00 2020
 @author: Gruppe 2
 """
 
-# %%
-#Gathering Data
 import spacy
 from spacy_langdetect import LanguageDetector
 from bs4 import BeautifulSoup
@@ -32,8 +30,11 @@ def output(text, x, ordner_path):
     writeFile.write(text)
     writeFile.close()
     
-def gathering(monat, jahr, anzahl):
-    ordner_path = dir_path + "/" + jahr + "_" + monat
+def gathering(monat, jahr, anzahl, x):
+    if x == 'k':
+        ordner_path = dir_path + "/Krise/" + jahr + "_" + monat
+    elif x == 'n':
+        ordner_path = dir_path + "/Normal/" + jahr + "_" + monat
     if not os.path.exists(ordner_path):
         os.makedirs(ordner_path)
     counter = 0
@@ -65,32 +66,33 @@ def gathering(monat, jahr, anzahl):
             links_artikel.append(a['href'])
            
     for artikel in links_artikel:
-    
-        soup_link = BeautifulSoup(requests.get(artikel).content, 'html.parser')
-        text = ""
-        for i in soup_link.select("section p", text=True):    
-            text = text + i.text
-     
-        doc = nlp(text)
-        if doc._.language["language"] == "en":
-            doc = nlp_e(text)
-            tags = tags_e.copy()
-        else:
-            tags = tags_d.copy()            
-        s = ""
-        for token in doc:
-            if token.tag_ in tags:    
-                s = s + " " + token.lemma_  
-        if len(s) !=0:                                                  
-            Artikeltexte.append(s)
-            output(s, counter, ordner_path)
-            counter += 1
-            if counter == anzahl:
-                break         
-        
+        try:
+            soup_link = BeautifulSoup(requests.get(artikel).content, 'html.parser')
+            text = ""
+            for i in soup_link.select("section p", text=True):    
+                text = text + i.text
+
+            doc = nlp(text)
+            if doc._.language["language"] == "en":
+                doc = nlp_e(text)
+                tags = tags_e.copy()
+            else:
+                tags = tags_d.copy()            
+            s = ""
+            for token in doc:
+                if token.tag_ in tags:    
+                    s = s + " " + token.lemma_  
+            if len(s) !=0:                                                  
+                Artikeltexte.append(s)
+                output(s, counter, ordner_path)
+                counter += 1
+                if counter == anzahl:
+                    break         
+        except:
+            pass
     return Artikeltexte
     
-Artikeltexte = gathering("09", "2009", 10)
+Artikeltexte = gathering("09", "2009", 10, "k")
 # %%
 #dataframe(?)
 
