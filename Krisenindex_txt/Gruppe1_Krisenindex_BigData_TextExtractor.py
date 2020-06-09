@@ -2,7 +2,7 @@
 """
 Created on Sun Apr 26 12:34:00 2020
 
-@author: Gruppe 2
+@author: Gruppe
 """
 
 import spacy
@@ -26,15 +26,85 @@ def output(text, x, ordner_path):
         filename = ordner_path + "/Artikeltext0%d.txt" % (x+1)
     else:
         filename = ordner_path + "/Artikeltext%d.txt" % (x+1)            
-    writeFile = open(filename, 'w', encoding="utf-8")
+    writeFile = open(filename, 'w')
     writeFile.write(text)
     writeFile.close()
     
+def gathering_2019(anzahl):
+    counter = 0
+    links_monat = []
+    Artikeltexte = [] 
+    monate = tag[:12]
+    
+    for monat in monate:
+        
+        if monat == "01" or monat == "03" or monat == "05" or monat == "07" or monat == "08" or monat == "10" or monat == "12":
+            for i in range(len(tag)):
+                link = stamm + tag[i] + "." + monat + ".2019.html"
+                links_monat.append(link)
+        elif monat =="02":
+            for i in range(len(tag)-3):
+                link = stamm + tag[i] + "." + monat + ".2019.html"
+                links_monat.append(link)
+        else:
+            for i in range(len(tag)-1):
+                link = stamm + tag[i] + "." + monat + ".2019.html"
+                links_monat.append(link)
+
+    for index, link in enumerate(links_monat):
+        nummer = str(index + 1)
+        links_tag = []
+        soup = BeautifulSoup(requests.get(link).content, 'html.parser')
+        if index < 99:
+            if index < 9:
+                ordner_path = dir_path + "/Corona/00" + nummer
+            else:
+                ordner_path = dir_path + "/Corona/0" + nummer
+        else:
+            ordner_path = dir_path + "/Corona/" + nummer
+        if not os.path.exists(ordner_path): 
+            os.makedirs(ordner_path)
+        for a in soup.select("article>header>h2>a"):
+            links_tag.append(a['href'])
+           
+        for artikel in links_tag:
+            try:
+                soup_link = BeautifulSoup(requests.get(artikel).content, 'html.parser')
+                text = ""
+                for i in soup_link.select("section p", text=True):    
+                    text = text + i.text
+             
+                doc = nlp(text)
+                if doc._.language["language"] == "en":
+                    doc = nlp_e(text)
+                    tags = tags_e.copy()  
+                else:
+                    tags = tags_d.copy()
+                s = ""
+                for token in doc:
+                    if token.tag_ in tags:    
+                        s = s + " " + token.lemma_  
+                if len(s) !=0:                                                  
+                    Artikeltexte.append(s)
+                    output(s, counter, ordner_path)
+                    counter += 1
+                    if counter == anzahl:
+                        break         
+            except:
+                pass
+        
+    return Artikeltexte    
+
+gathering_2019(0)
+
+# %%
 def gathering(monat, jahr, anzahl, x):
     if x == 'k':
         ordner_path = dir_path + "/Krise/" + jahr + "_" + monat
     elif x == 'n':
         ordner_path = dir_path + "/Normal/" + jahr + "_" + monat
+    elif x == 'c':
+        ordner_path = dir_path + "/Corona/" + jahr + "_" + monat        
     if not os.path.exists(ordner_path):
         os.makedirs(ordner_path)
     counter = 0
@@ -71,13 +141,13 @@ def gathering(monat, jahr, anzahl, x):
             text = ""
             for i in soup_link.select("section p", text=True):    
                 text = text + i.text
-
+         
             doc = nlp(text)
             if doc._.language["language"] == "en":
                 doc = nlp_e(text)
-                tags = tags_e.copy()
+                tags = tags_e.copy()  
             else:
-                tags = tags_d.copy()            
+                tags = tags_d.copy()
             s = ""
             for token in doc:
                 if token.tag_ in tags:    
@@ -90,26 +160,10 @@ def gathering(monat, jahr, anzahl, x):
                     break         
         except:
             pass
+        
     return Artikeltexte
-    
-Artikeltexte = gathering("09", "2009", 10, "k")
-# %%
-#dataframe(?)
 
-# %%
-#spacy
-
-
-# %%
-#string to txt
-
-#Platzhalter für die späteren Artikeltexte
-#Artikeltexte = ['aba', 'xyz', 'xgx', 'dssd', 'sdjh']
-
-#for x in range(0,len(Artikeltexte)):
-       #filename = "Artikeltext%d.txt" % (x)
-       #writeFile = open(filename, 'w')
-       #writeFile.write(Artikeltexte[x])
-       #writeFile.close()
-
-# %%
+# gathering("11", "2019", 0, "c")
+# gathering("12", "2019", 0, "c")
+# gathering("01", "2020", 0, "c")
+# gathering("02", "2020", 0, "c")
