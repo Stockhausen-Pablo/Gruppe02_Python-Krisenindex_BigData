@@ -30,7 +30,7 @@ def output(text, x, ordner_path):
     writeFile.write(text)
     writeFile.close()
     
-def gathering_2019(anzahl):
+def gathering_2019(anzahl, start):
     counter = 0
     links_monat = []
     Artikeltexte = [] 
@@ -50,8 +50,11 @@ def gathering_2019(anzahl):
             for i in range(len(tag)-1):
                 link = stamm + tag[i] + "." + monat + ".2019.html"
                 links_monat.append(link)
-
+    
+    links_monat = links_monat[start:]  
+    
     for index, link in enumerate(links_monat):
+        index += start
         nummer = str(index + 1)
         links_tag = []
         soup = BeautifulSoup(requests.get(link).content, 'html.parser')
@@ -95,7 +98,7 @@ def gathering_2019(anzahl):
         
     return Artikeltexte    
 
-gathering_2019(0)
+gathering_2019(0, 0)
 
 # %%
 def gathering(monat, jahr, anzahl, x):
