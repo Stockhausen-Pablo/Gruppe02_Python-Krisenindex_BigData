@@ -46,9 +46,9 @@ Tupel_Bag_k = Counter(chain.from_iterable(map(str.split, einlesen('k')))).most_c
 
 count = 0
 for index, tupel in enumerate(Tupel_Bag_k):
-    if tupel[1]>8000:
+    if tupel[1]>5000:
         count += 1
-    elif tupel[1]==49:
+    elif tupel[1]==29:
         Tupel_Bag_k = Tupel_Bag_k[count:index]
         break
 
@@ -58,15 +58,15 @@ Tupel_Bag_n = Counter(chain.from_iterable(map(str.split, einlesen('n')))).most_c
 
 count = 0
 for index, tupel in enumerate(Tupel_Bag_n):
-    if tupel[1]>8000:
+    if tupel[1]>5000:
         count += 1
-    elif tupel[1]==49:
+    elif tupel[1]==29:
         Tupel_Bag_n = Tupel_Bag_n[count:index]
         break
 
 # auf gleiche Länge bringen
 
-Tupel_Bag_k = Tupel_Bag_k[:len(Tupel_Bag_n)] 
+Tupel_Bag_n = Tupel_Bag_n[:len(Tupel_Bag_k)] 
 
 # TTF zu Panda
 ttf_vorkrisenzeit = pd.DataFrame(list(Tupel_Bag_k), columns=['Wort', 'Anzahl'])
@@ -77,7 +77,7 @@ ttf_vorkrisenzeit['Gewichtung'] = ttf_vorkrisenzeit['Anzahl']/sum(ttf_vorkrisenz
 ttf_normalzeit['Gewichtung'] = ttf_normalzeit['Anzahl']/sum(ttf_normalzeit['Anzahl'])
 
 # Corona einlesen
-#tag_l = einlesen('c')   
+tag_l = einlesen('c')   
 
 del index, count, tupel, Tupel_Bag_k, Tupel_Bag_n
 
@@ -88,8 +88,8 @@ del index, count, tupel, Tupel_Bag_k, Tupel_Bag_n
 import numpy as np
 
 # EINLESEN
-deskriptoren_vorkrise = np.loadtxt('Matrix_Vorkrise_komp.txt', dtype=float)
-deskriptoren_normal = np.loadtxt('Matrix_Normal_komp.txt', dtype=float)
+deskriptoren_vorkrise = np.loadtxt('Matrix_Vorkrise_Politik_NEW.txt', dtype=float)
+deskriptoren_normal = np.loadtxt('Matrix_Normal_Politik_NEW.txt', dtype=float)
 
 # ERSTELLEN
 # deskriptoren_vorkrise = np.zeros((len(tag_l), len(ttf_vorkrisenzeit)))
@@ -97,18 +97,20 @@ deskriptoren_normal = np.loadtxt('Matrix_Normal_komp.txt', dtype=float)
 
 # for i, tag in enumerate(tag_l):
 #     for wort in tag.split():
-#         for j, term in enumerate(ttf_normalzeit['Wort']):
-#             if wort == term:
-#                 deskriptoren_normal[i][j] += 1
-#                 break
-
-# for i, tag in enumerate(tag_l):
-#     for wort in tag.split():
 #         for j, term in enumerate(ttf_vorkrisenzeit['Wort']):
 #             if wort == term:
 #                 deskriptoren_vorkrise[i][j] += 1
 #                 break
-
+#     print("Vorkrise: Deskriptor " + str(i + 1) + " von " + str(len(tag_l)))
+    
+# for i, tag in enumerate(tag_l):
+#     for wort in tag.split():
+#         for j, term in enumerate(ttf_normalzeit['Wort']):
+#             if wort == term:
+#                 deskriptoren_normal[i][j] += 1
+#                 break
+#     print("Normal: Deskriptor " + str(i + 1) + " von " + str(len(tag_l)))
+    
 # del wort, term, i, j, tag
      
 #%%
@@ -144,8 +146,13 @@ score_df.plot(kind='line',y='p(Vorkrise)', color='red', ax=plt.gca())
 score_df.plot(kind='line',y='p(Normal)', ax=plt.gca())
 
 plt.show()
+
+score_df[300:].plot(kind='line',y='p(Vorkrise)', color='red', ax=plt.gca())
+score_df[300:].plot(kind='line',y='p(Normal)', ax=plt.gca())
+
+plt.show()
 #%%
 # MATRIZEN SPEICHERN
 
-# np.savetxt('Matrix_Vorkrise_komp.txt', deskriptoren_vorkrise, fmt='%d')
-# np.savetxt('Matrix_Normal_komp.txt', deskriptoren_normal, fmt='%d')
+np.savetxt('Matrix_Vorkrise_Politik_NEW.txt', deskriptoren_vorkrise, fmt='%d')
+np.savetxt('Matrix_Normal_Politik_NEW.txt', deskriptoren_normal, fmt='%d')
