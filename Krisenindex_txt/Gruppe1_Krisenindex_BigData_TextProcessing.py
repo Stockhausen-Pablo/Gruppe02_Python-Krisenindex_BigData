@@ -41,7 +41,6 @@ def einlesen(x):
     return all_text_liste 
  
 # Vorkrisenzeit einlesen
-
 Tupel_Bag_k = Counter(chain.from_iterable(map(str.split, einlesen('k')))).most_common()
 
 count = 0
@@ -53,7 +52,6 @@ for index, tupel in enumerate(Tupel_Bag_k):
         break
 
 # Normalzeit einlesen
-
 Tupel_Bag_n = Counter(chain.from_iterable(map(str.split, einlesen('n')))).most_common()
 
 count = 0
@@ -65,7 +63,6 @@ for index, tupel in enumerate(Tupel_Bag_n):
         break
 
 # auf gleiche Länge bringen
-
 Tupel_Bag_n = Tupel_Bag_n[:len(Tupel_Bag_k)] 
 
 # TTF zu Panda
@@ -74,13 +71,96 @@ ttf_normalzeit = pd.DataFrame(list(Tupel_Bag_n), columns=['Wort', 'Anzahl'])
 
 # Gewichtung hinzufügen
 ttf_vorkrisenzeit['Gewichtung'] = ttf_vorkrisenzeit['Anzahl']/sum(ttf_vorkrisenzeit['Anzahl'])
+ttf_vorkrisenzeit['positiv'] = [0]*len(ttf_vorkrisenzeit['Wort'])
+ttf_vorkrisenzeit['negativ'] = [0]*len(ttf_vorkrisenzeit['Wort'])
+
 ttf_normalzeit['Gewichtung'] = ttf_normalzeit['Anzahl']/sum(ttf_normalzeit['Anzahl'])
+ttf_normalzeit['positiv'] = [0]*len(ttf_normalzeit['Wort'])
+ttf_normalzeit['negativ'] = [0]*len(ttf_normalzeit['Wort'])
 
 # Corona einlesen
 tag_l = einlesen('c')   
 
 del index, count, tupel, Tupel_Bag_k, Tupel_Bag_n
 
+#%%
+# SENTI
+
+path_Senti_negative = dir_path + '/Senti/SentiWS_v2.0_Negative.txt'
+path_Senti_positive = dir_path + '/Senti/SentiWS_v2.0_Positive.txt'
+
+Senti_positive = []
+Senti_negative = []
+
+with open(path_Senti_positive, 'r', encoding="utf8") as file:
+    Senti_positive = file.read().splitlines()
+
+with open(path_Senti_negative, 'r', encoding="utf8") as file:
+    Senti_negative = file.read().splitlines()
+    
+# Filter List nach einem spezifischen Wort bis zum Symbol "|"
+for index,element in enumerate(Senti_positive):
+    m = element.index('|')    
+    Senti_positive[index] = element[:m]
+
+for index,element in enumerate(Senti_negative):
+    m = element.index('|')    
+    Senti_negative[index] = element[:m]
+
+del path_Senti_negative,path_Senti_positive, index, m, element, file
+
+for wort in Senti_negative:
+    for i, term in enumerate(ttf_vorkrisenzeit['Wort']):
+        if wort == term:
+            ttf_vorkrisenzeit["negativ"][i] += 1
+            break
+        
+    for i, term in enumerate(ttf_normalzeit['Wort']):
+        if wort == term:
+            ttf_normalzeit["negativ"][i] += 1
+            break
+        
+for wort in Senti_positive:
+    for i, term in enumerate(ttf_vorkrisenzeit['Wort']):
+        if wort == term:
+            ttf_vorkrisenzeit["positiv"][i] += 1
+            break
+        
+    for i, term in enumerate(ttf_normalzeit['Wort']):
+        if wort == term:
+            ttf_normalzeit["positiv"][i] += 1
+            break
+        
+del wort, i, term
+
+#%%
+# GEWICHTUNG MIT SENTI
+
+Gewichtung_Senti = []
+
+for i in range(len(ttf_vorkrisenzeit['Gewichtung'])):
+    if ttf_vorkrisenzeit['negativ'][i] == 1:
+        Gewichtung_Senti.append(ttf_vorkrisenzeit['Gewichtung'][i] * 4)
+    elif ttf_vorkrisenzeit['positiv'][i] == 1:
+        Gewichtung_Senti.append(ttf_vorkrisenzeit['Gewichtung'][i] * 0.25)
+    else:
+        Gewichtung_Senti.append(ttf_vorkrisenzeit['Gewichtung'][i])
+
+ttf_vorkrisenzeit['Gewichtung Senti'] = Gewichtung_Senti/sum(Gewichtung_Senti)
+
+Gewichtung_Senti = []
+
+for i in range(len(ttf_normalzeit['Gewichtung'])):
+    if ttf_normalzeit['positiv'][i] == 1:
+        Gewichtung_Senti.append(ttf_normalzeit['Gewichtung'][i] * 4)
+    elif ttf_normalzeit['negativ'][i] == 1:
+        Gewichtung_Senti.append(ttf_normalzeit['Gewichtung'][i] * 0.25)
+    else:
+        Gewichtung_Senti.append(ttf_normalzeit['Gewichtung'][i])
+
+ttf_normalzeit['Gewichtung Senti'] = Gewichtung_Senti/sum(Gewichtung_Senti)
+
+del i, Gewichtung_Senti
 
 #%%
 # DESKRIPTOREN ERSTELLEN/EINLESEN
@@ -92,8 +172,8 @@ deskriptoren_vorkrise = np.loadtxt('Matrix_Vorkrise_Politik_NEW.txt', dtype=floa
 deskriptoren_normal = np.loadtxt('Matrix_Normal_Politik_NEW.txt', dtype=float)
 
 # ERSTELLEN
-# deskriptoren_vorkrise = np.zeros((len(tag_l), len(ttf_vorkrisenzeit)))
-# deskriptoren_normal = np.zeros((len(tag_l), len(ttf_normalzeit)))
+# deskriptoren_vorkrise_1 = np.zeros((len(tag_l), len(ttf_vorkrisenzeit)))
+# deskriptoren_normal_1 = np.zeros((len(tag_l), len(ttf_normalzeit)))
 
 # for i, tag in enumerate(tag_l):
 #     for wort in tag.split():
@@ -120,11 +200,11 @@ score_vorkrise = []
 score_normal = []
 
 for i in range(len(deskriptoren_vorkrise)):
-    score = sum(deskriptoren_vorkrise[i] * np.array(ttf_vorkrisenzeit['Gewichtung']))
+    score = sum(deskriptoren_vorkrise[i] * np.array(ttf_vorkrisenzeit['Gewichtung Senti']))
     score_vorkrise.append(score)
 
 for i in range(len(deskriptoren_normal)):
-    score = sum(deskriptoren_normal[i] * np.array(ttf_normalzeit['Gewichtung']))
+    score = sum(deskriptoren_normal[i] * np.array(ttf_normalzeit['Gewichtung Senti']))
     score_normal.append(score)      
 
 del i, score
@@ -151,6 +231,7 @@ score_df[300:].plot(kind='line',y='p(Vorkrise)', color='red', ax=plt.gca())
 score_df[300:].plot(kind='line',y='p(Normal)', ax=plt.gca())
 
 plt.show()
+
 #%%
 # MATRIZEN SPEICHERN
 
