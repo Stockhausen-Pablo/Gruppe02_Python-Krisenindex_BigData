@@ -79,7 +79,7 @@ ttf_normalzeit['positiv'] = [0]*len(ttf_normalzeit['Wort'])
 ttf_normalzeit['negativ'] = [0]*len(ttf_normalzeit['Wort'])
 
 # Corona einlesen
-tag_l = einlesen('c')   
+# tag_l = einlesen('c')   
 
 del index, count, tupel, Tupel_Bag_k, Tupel_Bag_n
 
@@ -215,6 +215,7 @@ score_df['p(Normal)'] = score_df['Normal']/(score_df['Vorkrise']+score_df['Norma
 
 score_df['Kommt Krise?'] = np.where((score_df['p(Vorkrise)'] > score_df['p(Normal)']), 1, 0)
 
+score_df['date'] = pd.date_range(start='1/1/2019', periods=len(score_df), freq='D')
 del score_normal, score_vorkrise
 
 #%%
@@ -222,18 +223,19 @@ del score_normal, score_vorkrise
 
 import matplotlib.pyplot as plt
 
-score_df.plot(kind='line',y='p(Vorkrise)', color='red', ax=plt.gca())
-score_df.plot(kind='line',y='p(Normal)', ax=plt.gca())
+
+score_df.plot(kind='line',y='p(Vorkrise)', x='date', color='red', ax=plt.gca())
+score_df.plot(kind='line',y='p(Normal)', x='date', ax=plt.gca())
 
 plt.show()
 
-score_df[300:].plot(kind='line',y='p(Vorkrise)', color='red', ax=plt.gca())
-score_df[300:].plot(kind='line',y='p(Normal)', ax=plt.gca())
+score_df[300:].plot(kind='line',y='p(Vorkrise)', x='date', color='red', ax=plt.gca())
+score_df[300:].plot(kind='line',y='p(Normal)', x='date', ax=plt.gca())
 
 plt.show()
 
 #%%
 # MATRIZEN SPEICHERN
 
-np.savetxt('Matrix_Vorkrise_Politik_NEW.txt', deskriptoren_vorkrise, fmt='%d')
-np.savetxt('Matrix_Normal_Politik_NEW.txt', deskriptoren_normal, fmt='%d')
+# np.savetxt('Matrix_Vorkrise_Politik_NEW.txt', deskriptoren_vorkrise, fmt='%d')
+# np.savetxt('Matrix_Normal_Politik_NEW.txt', deskriptoren_normal, fmt='%d')
