@@ -212,8 +212,9 @@ del i, score
 score_df = pd.DataFrame({'Vorkrise': score_vorkrise, 'Normal': score_normal})     
 score_df['p(Vorkrise)'] = score_df['Vorkrise']/(score_df['Vorkrise']+score_df['Normal'])
 score_df['p(Normal)'] = score_df['Normal']/(score_df['Vorkrise']+score_df['Normal'])
-
+score_df['Differenz'] = score_df['p(Vorkrise)']-score_df['p(Normal)']
 score_df['Kommt Krise?'] = np.where((score_df['p(Vorkrise)'] > score_df['p(Normal)']), 1, 0)
+
 
 score_df['date'] = pd.date_range(start='1/1/2019', periods=len(score_df), freq='D')
 del score_normal, score_vorkrise
@@ -222,17 +223,24 @@ del score_normal, score_vorkrise
 # DARSTELLUNG
 
 import matplotlib.pyplot as plt
+import seaborn as sns
 
+sns.set_style('dark')
 
-score_df.plot(kind='line',y='p(Vorkrise)', x='date', color='red', ax=plt.gca())
-score_df.plot(kind='line',y='p(Normal)', x='date', ax=plt.gca())
+fig, ax1 = plt.subplots(figsize=(30, 10))
+sns.lineplot(x='date', y='p(Vorkrise)', data=score_df, ax=ax1)
+sns.lineplot(x='date', y='p(Normal)', data=score_df, ax=ax1)
+sns.despine(fig)
 
-plt.show()
+fig, ax1 = plt.subplots(figsize=(30, 10))
+sns.lineplot(x='date', y='p(Vorkrise)', data=score_df[300:], ax=ax1)
+sns.lineplot(x='date', y='p(Normal)', data=score_df[300:], ax=ax1)
+sns.despine(fig)
 
-score_df[300:].plot(kind='line',y='p(Vorkrise)', x='date', color='red', ax=plt.gca())
-score_df[300:].plot(kind='line',y='p(Normal)', x='date', ax=plt.gca())
-
-plt.show()
+fig, ax1 = plt.subplots(figsize=(30, 10))
+sns.lineplot(x='date', y='Differenz', data=score_df, ax=ax1)
+sns.lineplot(x='date', y=0, data=score_df, ax=ax1)
+sns.despine(fig)
 
 #%%
 # MATRIZEN SPEICHERN
