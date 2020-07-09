@@ -228,18 +228,21 @@ import seaborn as sns
 sns.set_style('dark')
 sns.set(font_scale=2.3)
 fig, ax1 = plt.subplots(figsize=(25, 12))
-sns.lineplot(x='date', y='p(Vorkrise)', data=score_df, ax=ax1)
-sns.lineplot(x='date', y='p(Normal)', data=score_df, ax=ax1)
+sns.lineplot(x='date', y='p(Normal)', data=score_df, ax=ax1, label="Normal")
+sns.lineplot(x='date', y='p(Vorkrise)', data=score_df, ax=ax1, label="Vorkrise")
+ax1.legend()
 sns.despine(fig)
 
 fig, ax1 = plt.subplots(figsize=(25, 12))
-sns.lineplot(x='date', y='p(Vorkrise)', data=score_df[300:], ax=ax1)
-sns.lineplot(x='date', y='p(Normal)', data=score_df[300:], ax=ax1)
+sns.lineplot(x='date', y='p(Normal)', data=score_df[300:], ax=ax1, label="Normal")
+sns.lineplot(x='date', y='p(Vorkrise)', data=score_df[300:], ax=ax1, label="Vorkrise")
+ax1.legend()
 sns.despine(fig)
 
 fig, ax1 = plt.subplots(figsize=(25, 12))
-sns.lineplot(x='date', y='Differenz', data=score_df, ax=ax1)
+sns.lineplot(x='date', y='Differenz', data=score_df, ax=ax1, label="Differenz")
 sns.lineplot(x='date', y=0, data=score_df, ax=ax1)
+ax1.legend()
 sns.despine(fig)
 
 #%%
