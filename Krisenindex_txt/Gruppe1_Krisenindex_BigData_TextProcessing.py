@@ -226,18 +226,18 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 sns.set_style('dark')
-
-fig, ax1 = plt.subplots(figsize=(30, 10))
+sns.set(font_scale=2.3)
+fig, ax1 = plt.subplots(figsize=(25, 12))
 sns.lineplot(x='date', y='p(Vorkrise)', data=score_df, ax=ax1)
 sns.lineplot(x='date', y='p(Normal)', data=score_df, ax=ax1)
 sns.despine(fig)
 
-fig, ax1 = plt.subplots(figsize=(30, 10))
+fig, ax1 = plt.subplots(figsize=(25, 12))
 sns.lineplot(x='date', y='p(Vorkrise)', data=score_df[300:], ax=ax1)
 sns.lineplot(x='date', y='p(Normal)', data=score_df[300:], ax=ax1)
 sns.despine(fig)
 
-fig, ax1 = plt.subplots(figsize=(30, 10))
+fig, ax1 = plt.subplots(figsize=(25, 12))
 sns.lineplot(x='date', y='Differenz', data=score_df, ax=ax1)
 sns.lineplot(x='date', y=0, data=score_df, ax=ax1)
 sns.despine(fig)
